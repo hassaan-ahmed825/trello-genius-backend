@@ -97,7 +97,12 @@ def auth_callback():
 
 @app.route('/api/boards')
 def get_boards():
+    """Get all boards for the authenticated user."""
+    # First try session token (from OAuth), then query param (from manual token)
     token = session.get('trello_token')
+    if not token:
+        token = request.args.get('token')
+    
     api_key = session.get('trello_api_key', TRELLO_API_KEY)
     
     if not token:
@@ -119,7 +124,11 @@ def get_boards():
 
 @app.route('/api/lists/<board_id>')
 def get_lists(board_id):
+    """Get lists from a specific board."""
     token = session.get('trello_token')
+    if not token:
+        token = request.args.get('token')
+    
     api_key = session.get('trello_api_key', TRELLO_API_KEY)
     
     if not token:
@@ -141,7 +150,11 @@ def get_lists(board_id):
 
 @app.route('/api/cards/<board_id>')
 def get_cards(board_id):
+    """Get cards from a specific board."""
     token = session.get('trello_token')
+    if not token:
+        token = request.args.get('token')
+    
     api_key = session.get('trello_api_key', TRELLO_API_KEY)
     
     if not token:
@@ -166,7 +179,11 @@ def get_cards(board_id):
 
 @app.route('/api/board/<board_id>')
 def get_board(board_id):
+    """Get board details."""
     token = session.get('trello_token')
+    if not token:
+        token = request.args.get('token')
+    
     api_key = session.get('trello_api_key', TRELLO_API_KEY)
     
     if not token:

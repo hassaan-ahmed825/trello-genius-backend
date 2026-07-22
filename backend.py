@@ -1,5 +1,6 @@
 from flask import Flask, redirect, request, jsonify, session
 from flask_cors import CORS
+from urllib.parse import quote
 import requests
 import os
 import json
@@ -44,9 +45,12 @@ def auth_trello():
     if not TRELLO_API_KEY:
         return jsonify({'error': 'TRELLO_API_KEY not configured'}), 500
     
+    # URL-encode the return_url
+    encoded_return_url = quote(TRELLO_REDIRECT_URI, safe='')
+    
     url = (
         f'https://trello.com/1/authorize'
-        f'?return_url={TRELLO_REDIRECT_URI}'
+        f'?return_url={encoded_return_url}'
         f'&callback_method=fragment'
         f'&expiration=never'
         f'&name=Trello%20Genius'
@@ -62,11 +66,8 @@ def auth_callback():
     token = request.args.get('token')
     
     if token:
-        # Store token in session (in production, store in a database)
         session['trello_token'] = token
         session['trello_api_key'] = TRELLO_API_KEY
-        
-        # Redirect back to your app with success
         return redirect(f'{AUTH_SUCCESS_URL}&token={token[:10]}...')
     
     return '''
@@ -81,7 +82,6 @@ def auth_callback():
 
 @app.route('/api/boards')
 def get_boards():
-    """Step 3: Get all boards for the authenticated user."""
     token = session.get('trello_token')
     api_key = session.get('trello_api_key', TRELLO_API_KEY)
     
@@ -104,7 +104,6 @@ def get_boards():
 
 @app.route('/api/lists/<board_id>')
 def get_lists(board_id):
-    """Get lists from a specific board."""
     token = session.get('trello_token')
     api_key = session.get('trello_api_key', TRELLO_API_KEY)
     
@@ -127,7 +126,6 @@ def get_lists(board_id):
 
 @app.route('/api/cards/<board_id>')
 def get_cards(board_id):
-    """Get cards from a specific board."""
     token = session.get('trello_token')
     api_key = session.get('trello_api_key', TRELLO_API_KEY)
     
@@ -153,7 +151,6 @@ def get_cards(board_id):
 
 @app.route('/api/board/<board_id>')
 def get_board(board_id):
-    """Get board details."""
     token = session.get('trello_token')
     api_key = session.get('trello_api_key', TRELLO_API_KEY)
     

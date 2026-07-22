@@ -13,7 +13,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-change-me')
 # ============================================================
 TRELLO_API_KEY = os.environ.get('TRELLO_API_KEY', '')
 TRELLO_API_SECRET = os.environ.get('TRELLO_API_SECRET', '')
-TRELLO_REDIRECT_URI = os.environ.get('TRELLO_REDIRECT_URI', 'https://your-app.onrender.com/auth/callback')
+TRELLO_REDIRECT_URI = os.environ.get('TRELLO_REDIRECT_URI', 'https://trello-genius-backend.onrender.com/auth/callback')
 AUTH_SUCCESS_URL = os.environ.get('AUTH_SUCCESS_URL', 'https://hassaan-ahmed825.github.io/trello-insights/?auth=success')
 
 # ============================================================
@@ -47,6 +47,7 @@ def auth_trello():
     url = (
         f'https://trello.com/1/authorize'
         f'?return_url={TRELLO_REDIRECT_URI}'
+        f'&callback_method=fragment'
         f'&expiration=never'
         f'&name=Trello%20Genius'
         f'&scope=read,write'

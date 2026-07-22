@@ -28,6 +28,7 @@ def home():
         'endpoints': [
             '/auth/trello',
             '/auth/callback',
+            '/get-token',
             '/api/boards',
             '/api/lists/<board_id>',
             '/api/cards/<board_id>',
@@ -39,13 +40,27 @@ def home():
 def health():
     return jsonify({'status': 'healthy'})
 
+@app.route('/get-token')
+def get_token():
+    """Helper page to generate a Trello token."""
+    if not TRELLO_API_KEY:
+        return jsonify({'error': 'TRELLO_API_KEY not configured'}), 500
+    
+    url = (
+        f'https://trello.com/1/authorize'
+        f'?expiration=never'
+        f'&scope=read,write'
+        f'&response_type=token'
+        f'&key={TRELLO_API_KEY}'
+    )
+    return redirect(url)
+
 @app.route('/auth/trello')
 def auth_trello():
     """Step 1: Redirect user to Trello for authorization."""
     if not TRELLO_API_KEY:
         return jsonify({'error': 'TRELLO_API_KEY not configured'}), 500
     
-    # URL-encode the return_url
     encoded_return_url = quote(TRELLO_REDIRECT_URI, safe='')
     
     url = (
